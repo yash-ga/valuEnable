@@ -22,6 +22,7 @@ export const Signup=()=>{
         <div>
             <h1>SignUp</h1>
             <input type="text" placeholder="Your Name" value={name} onChange={handleName} />
+            <input type="password" placeholder="Your Password" />
             <input type="email" placeholder="Your Email" value={email} onChange={handleEmail}/>
             <button onClick={handleSignUp}>SignUP</button>
             {signUp.map((e,id)=>{return(
