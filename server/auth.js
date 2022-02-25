@@ -1,42 +1,67 @@
-const express=require("express")
-const User = require("./models/user.model")
-const router=express.Router()
-const app=express()
-require("./db")
+const express = require("express");
+const User = require("./models/user.model");
+const router = express.Router();
+const app = express();
+require("./db");
 
-router.get("/",(req,res)=>{
-    res.send('xyz')
-})
-app.use(express.json())
-router.post("/register",async (req,res)=>{
-    // const {name,email}=user;
-    // console.log(name);
-    const {name,email}=req.body
-    if(!name||!email){
-        return res.status(422).json({error:"all fields are mnd"})
+router.get("/", (req, res) => {
+  res.send("xyz");
+});
+app.use(express.json());
+
+
+
+//ye user ke post ka route hai
+router.post("/register", async (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(422).json({ error: "all fields are mnd" });
+  }
+
+
+  try {
+    const UserExist = await User.findOne({ email: email });
+    if (UserExist) {
+      return res.status(422).json({ error: "email already exists" });
     }
+    const user = new User({ name, email, password });
+    await user.save();
+    res.status(201).json({ message: "user reg successfully" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+
+// router register yha khatam
+
+// router for signin
+
+router.post("/signin",async (req,res)=>{
     try{
-    
 
-        const UserExist=await User.findOne({email:email})
-        if(UserExist){
-            return res.status(422).json({error:"email already exists"})
+        const {email,password}=req.body
+        if(!email || !password){
+            return res.status(400).json({error:"plz fill credentials"})
         }
-        const user=new User({name,email})
-       const userReg= await user.save()
-
-       if(userReg){
-        res.status(201).json({message:"user reg successfully"})
-       }
+        const userLogin=await User.findOne({email:email})
+        console.log(userLogin);
 
 
-       
-    }
-    catch(err){
+        if(!userLogin){
+            res.status(400).json({error:"user login failed"})
+        }else{
+
+            res.status(200).json("user logged successfully")
+        }
+
+
+
+    }catch(err){
         console.log(err);
-        }
-        // console.log(name);
-    // console.log(email);
-    // res.json(req.body)
+    }
 })
-module.exports=router
+
+
+module.exports = router;
