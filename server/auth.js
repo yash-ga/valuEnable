@@ -56,6 +56,12 @@ router.post("/signin",async (req,res)=>{
              token =await userLogin.generateAuthToken()
             console.log(token);
 
+
+            res.cookie("jwtToken",token,{
+                expires:new Date(Data.now()+ 25892000000),
+                httpOnly:true
+            })
+
         if(!isMatch){
             res.status(400).json({error:"password does not match"})
         }else{
