@@ -6,15 +6,17 @@ const DB=process.env.DATABASE;
 const PORT=process.env.PORT;
 const app=express()
 app.use(express.json())
-mongoose.connect(DB,{
-    useNewUrlParser:true,
-    // useCreateIndex:true,
-    useUnifiedTopology:true,
-    // useFindAndModify:false
-}).then(()=>{
-    console.log('cs');
-}).catch((err)=>{console.log('err',err)});
-// app.get("/",async(req,res)=>{
+app.use(require("./auth.js"))
+require("./db")
+// mongoose.connect(DB,{
+//     useNewUrlParser:true,
+//     // useCreateIndex:true,
+//     useUnifiedTopology:true,
+//     // useFindAndModify:false
+// }).then(()=>{
+//     console.log('cs');
+// }).catch((err)=>{console.log('err',err)});
+// // app.get("/",async(req,res)=>{
     
 // })
 const middleware= (req,res,next)=>{
