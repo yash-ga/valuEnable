@@ -1,4 +1,6 @@
 const express = require("express");
+const jwt=require('jsonwebtoken')
+const bcrypt=require("bcryptjs")
 const User = require("./models/user.model");
 const router = express.Router();
 const app = express();
@@ -26,7 +28,9 @@ router.post("/register", async (req, res) => {
       return res.status(422).json({ error: "email already exists" });
     }
     const user = new User({ name, email, password });
-    await user.save();
+    const userReg =await user.save();
+    console.log(`${user} user reg succ`)
+    console.log(userReg);
     res.status(201).json({ message: "user reg successfully" });
   } catch (err) {
     console.log(err);
@@ -40,20 +44,28 @@ router.post("/register", async (req, res) => {
 
 router.post("/signin",async (req,res)=>{
     try{
-
+        let token;
         const {email,password}=req.body
         if(!email || !password){
             return res.status(400).json({error:"plz fill credentials"})
         }
         const userLogin=await User.findOne({email:email})
-        console.log(userLogin);
 
+        if(userLogin){
+            const isMatch=await bcrypt.compare(password,userLogin.password)
+             token =await userLogin.generateAuthToken()
+            console.log(token);
 
-        if(!userLogin){
-            res.status(400).json({error:"user login failed"})
+        if(!isMatch){
+            res.status(400).json({error:"password does not match"})
         }else{
 
             res.status(200).json("user logged successfully")
+        }
+
+        
+        }else{
+            res.status(400).json({error:"invalid credentials"})
         }
 
 
